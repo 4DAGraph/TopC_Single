@@ -93,9 +93,11 @@ module.exports = {
 		var privateKey = req.body.privateKey
 		//var privateKey = Buffer.from(req.body.privateKey, 'hex');
 
-		var BitcoinprivateKey = new bitcoin.PrivateKey(privateKey);
+		var bitcoinprivateKey = new bitcoin.PrivateKey(privateKey);
+
+		var privateKey = bitcoinprivateKey.toString()
 		var privateKey = Buffer.from(privateKey, 'hex');
-		
+
 		//var privateKey=Buffer.alloc(32, 0);
 		//privateKey[31]=1;
 		console.log("PK::"+privateKey.toString('hex'))
@@ -115,7 +117,7 @@ module.exports = {
 		const address = keccak256(publicKey) // keccak256 hash of  publicKey
 		const buf2 = Buffer.from(address, 'hex');
 		
-		var bitcoinAddress = BitcoinprivateKey.toAddress().toString();//bitcoin address
+		var bitcoinAddress = bitcoinprivateKey.toAddress().toString();//bitcoin address
 		console.log("Ethereum Adress:::"+"0x"+buf2.slice(-20).toString('hex')) // take lat 20 bytes as ethereum adress
 		console.log("Bitcoin Adress:::"+bitcoinAddress) // take lat 20 bytes as ethereum adress
 
