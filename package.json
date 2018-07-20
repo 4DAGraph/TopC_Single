@@ -40,9 +40,11 @@
     "pushdata-bitcoin": "^1.0.1",
     "qweb3": "^0.7.7",
     "randombytes": "^2.0.6",
+    "request": "^2.87.0",
     "sha1": "1.1.1",
     "typeforce": "^1.12.0",
     "varuint-bitcoin": "^1.1.0",
+    "web3": "^1.0.0-beta.34",
     "wif": "^2.0.6",
     "winston": "2.2.0"
   },
