@@ -2,7 +2,7 @@ var sign = require("./sign.js")
 var date = new Date();
 var config = require('../config/default.js');
 var bitcoin = require('../bitcoinjs')
-var bitcoin = require('../balance')
+//var bitcoin = require('./balance')
 
 
 module.exports = {
