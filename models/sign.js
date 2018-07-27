@@ -16,7 +16,7 @@ module.exports = {
         signETH: function cc_sign(req, res, next) {
                 console.log(date + ":CC_signInformation");
                 console.log(req.params.rawtx);
-                var tx = new Tx(JSON.parse(req.params.rawtx));
+                var tx = new Tx(JSON.pnoarse(req.params.rawtx));
                 var privateKey = new Buffer(req.params.privateKey, 'hex')
 
                 tx.sign(privateKey);
