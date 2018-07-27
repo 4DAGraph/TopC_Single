@@ -57,6 +57,23 @@ module.exports = {
 		var bitcoinprivateKey = new bitcoin.PrivateKey(ethereumKey);
 		var btcAddress = bitcoinprivateKey.toAddress().toString();
 		var btcKey = bitcoinprivateKey.toWIF()
+
+		var BufferprivateKey = Buffer.from(ethereumKey, 'hex');
+		var G = ec.g; // Generator point
+		var pk = new BN(BufferprivateKey); // private key as big number
+
+		var pubPoint = G.mul(pk); // EC multiplication to determine public point
+
+		var x = pubPoint.getX().toBuffer(); //32 bit x co-ordinate of public point
+		var y = pubPoint.getY().toBuffer(); //32 bit y co-ordinate of public point 
+
+		var publicKey = Buffer.concat([x, y])
+		console.log(ethereumKey)
+		console.log(BufferprivateKey)
+		console.log(publicKey.toString('hex'))
+		var bitcoinpublicKey = new bitcoin.PublicKey('04' + publicKey.toString('hex'));
+		var bitcoinAddUnCompress = bitcoinpublicKey.toAddress().toString()
+
 		console.log(bitcoinKey)
 		/*
 				console.log(bitcoinAddress)		
@@ -79,7 +96,7 @@ module.exports = {
 			"litecoin":
 				{ "privateKey": litecoinKey, "address": litecoinAddress },
 			"bitcoin":
-				{ "privateKey": btcKey, "address": btcAddress },
+				{ "privateKey": btcKey, "address": btcAddress, "UncompressAddress": bitcoinAddUnCompress },
 			"ethereum":
 				{ "privateKey": ethereumKey, "address": ethereumAddress },
 			"cic":
@@ -119,6 +136,9 @@ module.exports = {
 		const buf2 = Buffer.from(address, 'hex');
 
 		var bitcoinAddress = bitcoinprivateKey.toAddress().toString();//bitcoin address
+		var bitcoinpublicKey = new bitcoin.PublicKey('04' + publicKey.toString('hex'));
+		var bitcoinAddUnCompress = bitcoinpublicKey.toAddress().toString()
+		console.log('bitcoinAddUnCompress:' + bitcoinAddUnCompress)
 		console.log("Ethereum Adress:::" + "0x" + buf2.slice(-20).toString('hex')) // take lat 20 bytes as ethereum adress
 		console.log("Bitcoin Adress:::" + bitcoinAddress) // take lat 20 bytes as ethereum adress
 
@@ -131,10 +151,12 @@ module.exports = {
 				privateKey.toString('hex'),
 			"publickey::":
 				publicKey.toString('hex'),
-			"EthereumAdress:::":
+			"EthereumAddress:::":
 				"0x" + buf2.slice(-20).toString('hex'),
-			"BitcoinAdress:::":
+			"BitcoinAddress:::":
 				bitcoinAddress,
+			"BitcoinAddressUncompress:::":
+				bitcoinAddUnCompress,
 			"CICAddress:::":
 				cicAddress
 		}

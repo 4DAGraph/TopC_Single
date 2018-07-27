@@ -11,20 +11,34 @@ var ec = new EC('secp256k1');
 const keccak256 = require('js-sha3').keccak256;
 //var ethereum = require('ethereumjs-wallet')
 
+const secp256k1 = require('secp256k1')
+var sha256 = require("sha256")
 
-                var bitcoinprivateKey = new bitcoin.PrivateKey("L5oBKvPuqWwckm6QHfe7jrqwioL3mnnyHqRvZ9JFm8r68Zq56G29");
-                var bitcoinAddress = bitcoinprivateKey.toAddress().toString();
-                var bitcoinKey = bitcoinprivateKey.toString()
-				console.log(bitcoinprivateKey.toWIF());
-                console.log(bitcoinAddress)
-				console.log(bitcoinprivateKey)
-				
 
-                var bitcoinprivateKey1 = new bitcoin.PrivateKey("ffea96f4c8910006bdb25eb908b00b4f647b4e3f9ee9571c1f89121e9180f585");
-                var bitcoinAddress1 = bitcoinprivateKey1.toAddress().toString();
-                var bitcoinKey1 = bitcoinprivateKey.toString()
-				console.log(bitcoinprivateKey1.toWIF());
-                console.log(bitcoinAddress1)
-				console.log(bitcoinprivateKey1)				
+var privateKey = 'be7f9dfe3c8f6c25eed21c0d292485cfad991e2bb2abb1a1c773b7130635eee1'
 
-				
+var privateKey = Buffer.from(privateKey, 'hex');
+console.log(privateKey)
+var G = ec.g; // Generator point
+var pk = new BN(privateKey); // private key as big number
+
+var pubPoint = G.mul(pk); // EC multiplication to determine public point
+
+var x = pubPoint.getX().toBuffer(); //32 bit x co-ordinate of public point
+var y = pubPoint.getY().toBuffer(); //32 bit y co-ordinate of public point 
+
+var publicKey = Buffer.concat([x, y])
+
+console.log("public key::" + publicKey.toString('hex'))
+//console.log(keccak256)
+const address = keccak256(publicKey) // keccak256 hash of  publicKey
+const buf2 = Buffer.from(address, 'hex')
+
+var bitcoinprivateKey = new bitcoin.PrivateKey(privateKey);
+var bitcoinAddress = bitcoinprivateKey.toAddress().toString();//bitcoin address
+var bitcoinpublicKey = new bitcoin.PublicKey('04' + publicKey.toString('hex'));
+var bitcoinAddUnCompress = bitcoinpublicKey.toAddress().toString()
+console.log('bitcoinAddUnCompress:' + bitcoinAddUnCompress)
+console.log("Ethereum Adress:::" + "0x" + buf2.slice(-20).toString('hex')) // take lat 20 bytes as ethereum adress
+console.log("Bitcoin Adress:::" + bitcoinAddress) // take lat 20 bytes as ethereum adress		
+
