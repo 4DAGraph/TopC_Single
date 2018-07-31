@@ -68,28 +68,11 @@ module.exports = {
 		var y = pubPoint.getY().toBuffer(); //32 bit y co-ordinate of public point 
 
 		var publicKey = Buffer.concat([x, y])
-		console.log(ethereumKey)
-		console.log(BufferprivateKey)
-		console.log(publicKey.toString('hex'))
 		var bitcoinpublicKey = new bitcoin.PublicKey('04' + publicKey.toString('hex'));
 		var bitcoinAddUnCompress = bitcoinpublicKey.toAddress().toString()
 
-		console.log(bitcoinKey)
-		/*
-				console.log(bitcoinAddress)		
-						var cic = ethereum.fromPrivateKey(Buffer.from(ethereumKey,"hex"))
-						var cicpub = cic.getPublicKey().toString("hex");
-		*/
-		//var secp256k1 = require('secp256k1')
-		//var privateKey = "97ddae0f3a25b92268175400149d65d6887b9cefaf28ea2c078e05cdc15a3c0a"
 		var re = secp256k1.publicKeyCreate(Buffer.from(ethereumKey, "hex"), false).slice(1)
-		//console.log(re)
-
-		//var cicaddress = secp256k1.publicKeyCreate(Buffer.from(ethereumKey,"hex"))
-		//console.log(cicaddress);
 		var cicAddress = "cx" + sha256("0x" + re.toString("hex")).substr(24, 64)
-		//console.log(cicadd)
-		//console.log(cicadd.substr(24,64))
 
 		var re = {
 			"version": "0.01", "mnemonic": mnemonic, "HDkey": HDkey,
@@ -102,23 +85,16 @@ module.exports = {
 			"cic":
 				{ "privateKey": ethereumKey, "address": cicAddress }
 		}
-		console.log(re)
 		res.send(re);
 	},
 
 	keyToAddress: function keyToAddress(req, res, next) {
 		var privateKey = req.body.privateKey
-		//var privateKey = Buffer.from(req.body.privateKey, 'hex');
 
 		var bitcoinprivateKey = new bitcoin.PrivateKey(privateKey);
 
 		var privateKey = bitcoinprivateKey.toString()
 		var privateKey = Buffer.from(privateKey, 'hex');
-
-		//var privateKey=Buffer.alloc(32, 0);
-		//privateKey[31]=1;
-
-		console.log("PK::" + privateKey.toString('hex'))
 
 		var G = ec.g; // Generator point
 		var pk = new BN(privateKey); // private key as big number
@@ -138,65 +114,27 @@ module.exports = {
 		var bitcoinAddress = bitcoinprivateKey.toAddress().toString();//bitcoin address
 		var bitcoinpublicKey = new bitcoin.PublicKey('04' + publicKey.toString('hex'));
 		var bitcoinAddUnCompress = bitcoinpublicKey.toAddress().toString()
-		console.log('bitcoinAddUnCompress:' + bitcoinAddUnCompress)
-		console.log("Ethereum Adress:::" + "0x" + buf2.slice(-20).toString('hex')) // take lat 20 bytes as ethereum adress
-		console.log("Bitcoin Adress:::" + bitcoinAddress) // take lat 20 bytes as ethereum adress
 
 
 		var cicAddress = "cx" + sha256(publicKey.toString("hex")).substr(24, 64)
-		console.log("CIC Adress:::" + cicAddress);
 
 		var re = {
-			"PK::":
+			"PK:":
 				privateKey.toString('hex'),
-			"publickey::":
+			"publickey:":
 				publicKey.toString('hex'),
-			"EthereumAddress:::":
+			"EthereumAddress:":
 				"0x" + buf2.slice(-20).toString('hex'),
-			"BitcoinAddress:::":
+			"BitcoinAddress:":
 				bitcoinAddress,
-			"BitcoinAddressUncompress:::":
+			"BitcoinAddressUncompress:":
 				bitcoinAddUnCompress,
-			"CICAddress:::":
+			"CICAddress:":
 				cicAddress
 		}
 		res.send(re);
 	},
 
-	/*
-		keyToAddress:function keyToAddress(req, res, next){
-	
-			var keyx = req.body.key
-	
-					if(keyx.length!=64){
-					var bitcoinprivateKey = new bitcoin.PrivateKey(keyx);
-					keyx = bitcoinprivateKey.toString()
-					}
-	
-					//var bitcoinAddress = keyPair.getAddress()
-	
-	
-					var bitcoinprivateKey = new bitcoin.PrivateKey(keyx);
-					var bitcoinAddress = bitcoinprivateKey.toAddress().toString();
-					var bitcoinKey = bitcoinprivateKey.toString()
-			console.log(bitcoinprivateKey.toWIF());
-					console.log(bitcoinAddress)
-	
-					//litecoin
-					//var litecore = require('litecore');
-	
-					var x = ethereum.fromPrivateKey(Buffer.from(keyx,"hex"))
-					ethereumAddress = x.getAddress().toString("hex");
-					var re = {
-							"version":"0.01",
-									"bitcoin":
-									{"address":bitcoinAddress},
-									"ethereum":
-					{"address":ethereumAddress}
-									}
-			res.send(re)
-		},
-	*/
 	accountQT: function accountQT(req, res, next) {
 		var result = [];
 		var times = 0;
