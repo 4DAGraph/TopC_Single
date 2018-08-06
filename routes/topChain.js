@@ -8,8 +8,11 @@ router.post("/account",mnemonic.account);
 router.get("/accountQT/:amount",mnemonic.accountQT);
 router.post("/newSignAll/:privateKey/:rawtx",chainAPI.newSignAll);
 
+router.post("/CICBroadcast",mnemonic.CICBroadcast);
 
 router.post("/keyToAddress",mnemonic.keyToAddress)
+
+//router.get("/getBalance_app/:address",chainAPI.getBalance_app);
 ///測試專用
 
 

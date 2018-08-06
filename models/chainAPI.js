@@ -2,7 +2,7 @@ var sign = require("./sign.js")
 var date = new Date();
 var config = require('../config/default.js');
 var bitcoin = require('../bitcoinjs')
-
+//var balance = require("./balance.js")
 
 module.exports = {
 
@@ -38,7 +38,15 @@ module.exports = {
 			console.log("cic")
 			sign.signCIC(req, res, next);
 		}
-	}
+	},
+        //getBalance_app:  function getBalance_app(req, res, next){
+          //      balance.getBalance_app(req, res, next);
+                /*
+                console.log(date+":getBalance");
+                console.log(date+":getBalance-success");
+                res.send(web3.eth.getBalance(req.params.address));
+                */
+       // }
 
 }
 

@@ -387,19 +387,21 @@ module.exports = {
                 //function CICsign2(fee, address, outbtr, outcoin, nonce, type, input, PrivateKey) {
 
                 //var aaaa = '{ "method": "signTransaction", "param": [{ "fee": "' + fee + '", "to": "' + address + '", "out": {"' + outbtr + '": "' + outcoin + '" }, "nonce": "' + nonce + '", "type": "' + type + '", "input": "' + input + '" }, "' + PrivateKey + '"] }'
-                var aaaa = '{ "method": "signTransaction","param": [	{ "fee": "' + req.body.fee + '", "to": "' + req.body.address + '", "out": {"' + req.body.coin + '": "' + req.body.balance + '" }, "nonce": "' + req.body.nonce + '", "type": "' + req.body.type + '", "input": "' + req.body.input + '"}, "' + req.body.PrivateKey + '"]}'
-	                console.log(aaaa)
-       		        aaaa = JSON.parse(aaaa)
-               		request.post(
+                var CICsignParam = '{ "method": "signTransaction","param": [	{ "fee": "' + req.body.fee + '", "to": "' + req.body.address + '", "out": {"' + req.body.coin + '": "' + req.body.balance + '" }, "nonce": "' + req.body.nonce + '", "type": "' + req.body.type + '", "input": "' + req.body.input + '"}, "' + req.body.PrivateKey + '"]}'
+	       	console.log(CICsignParam)
+       		CICsignParam = JSON.parse(CICsignParam)
+               	request.post(
                         //'http://192.168.51.201:9000/',
                         CICport,
                         {
-                                json: aaaa
+                                json: CICsignParam
                         },
                         function (error, response, body) {
                                 //if (!error && response.statusCode == 200) {
                                 console.log(body)
-                                //CICsend(body)
+                                res.send(body)
+				//CICsend(body)
+				/*
                                 request.post(
                                         CICport,
                                         {
@@ -413,6 +415,7 @@ module.exports = {
                                                 }
                                         }
                                 );
+				*/
                                 //}
                         }
                 );

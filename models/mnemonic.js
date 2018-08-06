@@ -13,6 +13,10 @@ const keccak256 = require('js-sha3').keccak256;
 
 const secp256k1 = require('secp256k1')
 var sha256 = require("sha256")
+var request = require('request');
+var config = require('../config/default.js');
+var CICport = config.cicport;
+
 /*
 var fs=require("fs");
 
@@ -72,8 +76,9 @@ module.exports = {
 		var bitcoinAddUnCompress = bitcoinpublicKey.toAddress().toString()
 
 		var re = secp256k1.publicKeyCreate(Buffer.from(ethereumKey, "hex"), false).slice(1)
-		var cicAddress = "cx" + sha256("0x" + re.toString("hex")).substr(24, 64)
-
+		//var cicAddress = "cx" + sha256("0x" + re.toString("hex")).substr(24, 64)
+		var cicAddress = "cx" + sha256(re.toString("hex")).substr(24, 64)
+		console.log(re.toString("hex"))
 		var re = {
 			"version": "0.01", "mnemonic": mnemonic, "HDkey": HDkey,
 			"litecoin":
@@ -186,6 +191,25 @@ module.exports = {
 			}
 		}
 		res.send(result);
+	},
+	CICBroadcast: function CICBroadcast(req, res, next) {
+		console.log(req.body)
+		console.log(CICport)
+		var CICbroadparam = req.body 
+                request.post(
+                                CICport,
+                                /*{				
+                                        //json: { "method": "sendTransaction", "param": [params.result] }
+                                },*/
+				{json:CICbroadparam},
+                                function (error, response, body) {
+                                        if (!error && response.statusCode == 200) {
+                                                console.log(body)
+                                                res.send(body)
+                                        }
+                                }
+                        );
+
 	}
 }
 /*
