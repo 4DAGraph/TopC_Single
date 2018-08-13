@@ -77,7 +77,7 @@ module.exports = {
                 //console.log(3)
                 /*
                                 tx.forEach(function(result){
-                                        txb.addOutput(result.address,result.value)
+                                       txb.addOutput(result.address,result.value)
                                 })
                 */
                 txb.sign(0, keyPair)
@@ -90,8 +90,14 @@ module.exports = {
                 var priv = req.body.privatekey
                 var tx = req.body.tx
                 var unspend = req.body.unspend
-                var keyPair = bitcoin.ECPair.fromWIF(priv)
-                var txb = new bitcoin.TransactionBuilder()
+                var keyPair = bitcoin.ECPair.fromWIF(priv/*,{compressed: false}*/)
+				if(req.body.compressed != undefined)
+					keyPair["compressed"] = req.body.compressed
+				//console.log(keyPair)
+				//keyPair = keyPair.privateKey.toString('hex')
+				//console.log(keyPair)
+				//keyPair = bitcoin.ECPair.fromPrivateKey(keyPair,{compressed: false})
+				var txb = new bitcoin.TransactionBuilder()
                 //txb.addInput('6c215b731831dceed69f2a36312ef1b305df8ad3af57df37609b571b9727e42d', 0)
                 //console.log(123)
                 console.log(unspend)
@@ -127,7 +133,9 @@ module.exports = {
                 var keyPair = bitcoin.ECPair.fromWIF(priv)
                 var txb = new bitcoin.TransactionBuilder()
                 var cicAddress = req.body.cicAddress
-                //txb.addInput('6c215b731831dceed69f2a36312ef1b305df8ad3af57df37609b571b9727e42d', 0)
+                if(req.body.compressed != undefined)
+					keyPair["compressed"] = req.body.compressed
+				//txb.addInput('6c215b731831dceed69f2a36312ef1b305df8ad3af57df37609b571b9727e42d', 0)
                 //console.log(123)
                 console.log(unspend)
                 unspend.forEach(function (result) {
