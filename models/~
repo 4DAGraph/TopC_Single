@@ -16,9 +16,7 @@ var sha256 = require("sha256")
 var request = require('request');
 var config = require('../config/default.js');
 var CICport = config.cicport;
-var crypto = require('crypto');
-var encrypto = require('./encrypto');
-
+crypto = require('crypto');
 /*
 var fs=require("fs");
 
@@ -98,21 +96,30 @@ module.exports = {
 				{ "privateKey": ethereumKey, "address": cicAddress }
 		}
 		//res.send(re);
-		if(req.body.encry != undefined && req.body.encry == true){
-			var stringre = JSON.stringify(re)
-			var crypted = encrypto.encrypt(stringre)
-			res.send({"eprivatekey":crypted})		
+		if (req.body.encry == undefined){
+			res.send(re);
 		}
 		else{
-			res.send(re);
+			var stringre = JSON.stringify(re);
+			console.log(stringre)
+			/*var aeskey = "gibofflinewallet"
+			var aesiv = "walletofflinegib"
+            var md5 = crypto.createHash("md5");
+            md5.update(aeskey);
+            var key = md5.digest('hex');
+			var cipher = crypto.createCipheriv('aes-256-cbc', key, aesiv);
+			var crypted = cipher.update(stringre, 'utf8', 'binary');
+			crypted += cipher.final('binary');
+			crypted = new Buffer(crypted, 'binary').toString('base64');
+			res.send(crypted);*/
+			var crypted = chainAPI.encrypt(stringre)
+			console.log(crypted)
+			res.send(crypted)			
 		}
 	},
 
 	keyToAddress: function keyToAddress(req, res, next) {
 		var privateKey = req.body.privateKey
-		if (req.body.encry != undefined && req.body.encry == true){
-			privateKey = encrypto.decrypt(privateKey)
-		}
 
 		var bitcoinprivateKey = new bitcoin.PrivateKey(privateKey);
 
@@ -129,7 +136,7 @@ module.exports = {
 
 		var publicKey = Buffer.concat([x, y])
 
-		//console.log("public key::" + publicKey.toString('hex'))
+		console.log("public key::" + publicKey.toString('hex'))
 		//console.log(keccak256)
 		const address = keccak256(publicKey) // keccak256 hash of  publicKey
 		const buf2 = Buffer.from(address, 'hex');

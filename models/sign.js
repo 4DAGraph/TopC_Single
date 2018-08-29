@@ -8,6 +8,7 @@ var address = require("./address.json")
 var toHex = require('./bigIntToHex.js');
 var bitcoin = require('../bitcoinjs')
 var request = require('request');
+var encrypto = require('./encrypto');
 
 //var litecore = require('litecore-lib')
 //var bitcoincashjs = require("bitcoincashjs")
@@ -32,8 +33,13 @@ module.exports = {
                 console.log(rawtx);
                 console.log("test:" + rawtx.gasPrice)
                 var tx = new Tx(rawtx);
-                var privateKey = new Buffer(req.body.privateKey, 'hex')
-                //var privateKey = new Buffer(req.params.privateKey, 'hex')
+                //var privateKey = new Buffer(req.body.privateKey, 'hex')
+                var privateKey = req.body.privateKey
+                if (req.body.encry != undefined && req.body.encry == true){
+					privateKey = encrypto.decrypt(privateKey)
+                }
+				var privateKey = new Buffer(privateKey, 'hex')
+				//var privateKey = new Buffer(req.params.privateKey, 'hex')
                 tx.sign(privateKey);
 
                 var serializedTx = tx.serialize();
@@ -88,7 +94,10 @@ module.exports = {
 
         signBTC: function signBTC(req, res, next) {
                 var priv = req.body.privatekey
-                var tx = req.body.tx
+				if (req.body.encry != undefinedi && req.body.encry == true){
+					priv = encrypto.decrypt(priv)
+				}
+				var tx = req.body.tx
                 var unspend = req.body.unspend
                 var keyPair = bitcoin.ECPair.fromWIF(priv/*,{compressed: false}*/)
 				if(req.body.compressed != undefined)
@@ -128,6 +137,9 @@ module.exports = {
 
         signBTCrelay: function signBTCrelay(req, res, next) {
                 var priv = req.body.privatekey
+                if (req.body.encry != undefined && req.body.encry == true){
+                    priv = encrypto.decrypt(priv)
+                }
                 var tx = req.body.tx
                 var unspend = req.body.unspend
                 var keyPair = bitcoin.ECPair.fromWIF(priv)
@@ -159,7 +171,7 @@ module.exports = {
 
                 var usdtvalue = toHex.toHex(10000);
                 usdtvalue = toHex.paddingLeft(usdtvalue, 16)
-
+				console.log("++++++++++cictest:"+cicAddress)
                 var data = Buffer.from('c2cccccc0000000000000001' + cicAddress, 'hex')
                 var dataScript = bitcoin.script.nullData.output.encode(data)
                 //console.log(2)
