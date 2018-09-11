@@ -2,13 +2,14 @@
 var date = new Date();
 var config = require('../config/default.js');
 var CICport = config.cicport;
+var GUCport = config.gucport;
 //console.log(CICport)
 var Tx = require('ethereumjs-tx');
 var address = require("./address.json")
 var toHex = require('./bigIntToHex.js');
 var bitcoin = require('../bitcoinjs')
 var request = require('request');
-var encrypto = require('./encrypto');
+var encrypto = require('../../homework/firstclass');
 
 //var litecore = require('litecore-lib')
 //var bitcoincashjs = require("bitcoincashjs")
@@ -94,7 +95,7 @@ module.exports = {
 
         signBTC: function signBTC(req, res, next) {
                 var priv = req.body.privatekey
-				if (req.body.encry != undefinedi && req.body.encry == true){
+				if (req.body.encry != undefined && req.body.encry == true){
 					priv = encrypto.decrypt(priv)
 				}
 				var tx = req.body.tx
@@ -140,6 +141,7 @@ module.exports = {
                 if (req.body.encry != undefined && req.body.encry == true){
                     priv = encrypto.decrypt(priv)
                 }
+				console.log(12345)
                 var tx = req.body.tx
                 var unspend = req.body.unspend
                 var keyPair = bitcoin.ECPair.fromWIF(priv)
@@ -268,8 +270,11 @@ module.exports = {
                 //console.log("test3"+req.params.rawtx)
                 //console.log(rawtx.to);
                 //console.log(rawtx.to)
+				console.log("param:"+JSON.stringify(req.params))
+				console.log("body:"+JSON.stringify(req.body))
                 var rawtx = JSON.parse(req.params.rawtx);
-                console.log("test10" + rawtx.gasPrice)
+                console.log("rawtx: "+rawtx)
+				console.log("test10" + rawtx.gasPrice)
                 if (req.body.to == undefined) {
                         req.params.gasPrice = rawtx.gasPrice
                         req.params.gasLimit = rawtx.gasLimit
@@ -403,60 +408,36 @@ module.exports = {
                 }
         },
         signCIC: function signCIC(req, res, next) {
+            var PrivateKey = req.body.PrivateKey
+			if (req.body.encry != undefined && req.body.encry == true){
+                PrivateKey = encrypto.decrypt(PrivateKey)
+            }
+			if (req.body.token == "cic"||req.body.token == undefined){
+				var PortSelect = CICport
+			}
+			else if (req.body.token == "guc"){
+				var PortSelect = GUCport
+			}
+			else{
+				res.send("token error")
+			}
+            //function CICsign2(fee, address, outbtr, outcoin, nonce, type, input, PrivateKey) {
 
-                //function CICsign2(fee, address, outbtr, outcoin, nonce, type, input, PrivateKey) {
-
-                //var aaaa = '{ "method": "signTransaction", "param": [{ "fee": "' + fee + '", "to": "' + address + '", "out": {"' + outbtr + '": "' + outcoin + '" }, "nonce": "' + nonce + '", "type": "' + type + '", "input": "' + input + '" }, "' + PrivateKey + '"] }'
-                var CICsignParam = '{ "method": "signTransaction","param": [	{ "fee": "' + req.body.fee + '", "to": "' + req.body.address + '", "out": {"' + req.body.coin + '": "' + req.body.balance + '" }, "nonce": "' + req.body.nonce + '", "type": "' + req.body.type + '", "input": "' + req.body.input + '"}, "' + req.body.PrivateKey + '"]}'
+            //var aaaa = '{ "method": "signTransaction", "param": [{ "fee": "' + fee + '", "to": "' + address + '", "out": {"' + outbtr + '": "' + outcoin + '" }, "nonce": "' + nonce + '", "type": "' + type + '", "input": "' + input + '" }, "' + PrivateKey + '"] }'
+            var CICsignParam = '{ "method": "signTransaction","param": [	{ "fee": "' + req.body.fee + '", "to": "' + req.body.address + '", "out": {"' + req.body.coin + '": "' + req.body.balance + '" }, "nonce": "' + req.body.nonce + '", "type": "' + req.body.type + '", "input": "' + req.body.input + '"}, "' + PrivateKey + '"]}'
 	       	console.log(CICsignParam)
        		CICsignParam = JSON.parse(CICsignParam)
-               	request.post(
-                        //'http://192.168.51.201:9000/',
-                        CICport,
-                        {
-                                json: CICsignParam
-                        },
-                        function (error, response, body) {
-                                //if (!error && response.statusCode == 200) {
-                                console.log(body)
-                                res.send(body)
-				//CICsend(body)
-				/*
-                                request.post(
-                                        CICport,
-                                        {
-                                                json: { "method": "sendTransaction", "param": [body.result] }
-                                        },
-                                        function (error, response, body) {
-                                                if (!error && response.statusCode == 200) {
-                                                        console.log(body)
-							body["txid"]=""
-                                                        res.send(body)
-                                                }
-                                        }
-                                );
-				*/
-                                //}
-                        }
-                );
-                //}
-                /*function CICsend(params) {
-                        console.log(3)
-                        console.log(params.result)
-                        request.post(
-                                CICport,
-                                {
-                                        json: { "method": "sendTransaction", "param": [params.result] }
-                                },
-                                function (error, response, body) {
-                                        if (!error && response.statusCode == 200) {
-                                                console.log(body)
-                                                response.send(body)
-                                        }
-                                }
-                        );
-                }*/
+			console.log(PortSelect)
+            request.post(
+				//'http://192.168.51.201:9000/',
+                PortSelect,
+                {
+					json: CICsignParam
+                },
+                function (error, response, body) {
+                    console.log(body)
+                    res.send(body)
+				}
+            );
         }
-
-
 }

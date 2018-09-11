@@ -63,7 +63,7 @@ module.exports = {
 			console.log("bch")
 			sign.signBCH(req, res, next);
 		}
-		if (req.body.token == "cic") {
+		if (req.body.token == "cic"||req.body.token == "guc") {
 			console.log("cic")
 			sign.signCIC(req, res, next);
 		}

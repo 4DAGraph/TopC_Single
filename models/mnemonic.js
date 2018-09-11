@@ -16,8 +16,9 @@ var sha256 = require("sha256")
 var request = require('request');
 var config = require('../config/default.js');
 var CICport = config.cicport;
+var GUCport = config.gucport;
 var crypto = require('crypto');
-var encrypto = require('./encrypto');
+var encrypto = require('../../homework/firstclass');
 
 /*
 var fs=require("fs");
@@ -40,6 +41,9 @@ module.exports = {
 		//bitcoin
 		if (req.body.mnemonic != undefined) {
 			var mnemonic = req.body.mnemonic;
+	        if (req.body.encry != undefined && req.body.encry == true){
+		        mnemonic = encrypto.decrypt(mnemonic)
+			}
 		} else {
 			var mnemonic = bip39.generateMnemonic()
 		}
@@ -85,6 +89,7 @@ module.exports = {
 		var re = secp256k1.publicKeyCreate(Buffer.from(ethereumKey, "hex"), false).slice(1)
 		//var cicAddress = "cx" + sha256("0x" + re.toString("hex")).substr(24, 64)
 		var cicAddress = "cx" + sha256(re.toString("hex")).substr(24, 64)
+		var gucAddress = "gx" + sha256(re.toString("hex")).substr(24, 64)
 		//console.log(re.toString("hex"))
 		var re = {
 			"version": "0.01", "mnemonic": mnemonic, "HDkey": HDkey,
@@ -95,7 +100,9 @@ module.exports = {
 			"ethereum":
 				{ "privateKey": ethereumKey, "address": ethereumAddress },
 			"cic":
-				{ "privateKey": ethereumKey, "address": cicAddress }
+				{ "privateKey": ethereumKey, "address": cicAddress },
+			"guc":
+				{ "privateKey": ethereumKey, "address": gucAddress }
 		}
 		//res.send(re);
 		if(req.body.encry != undefined && req.body.encry == true){
@@ -115,6 +122,9 @@ module.exports = {
 		}
 
 		var bitcoinprivateKey = new bitcoin.PrivateKey(privateKey);
+        
+        //var LTCprivateKey = new litecore.PrivateKey("6760fa752de1a78d298b60a87ff28c5c9d3079fadce05db8d1f70501761e9890");
+        //var litecoinAddress = LTCprivateKey.toAddress().toString();
 
 		var privateKey = bitcoinprivateKey.toString()
 		var privateKey = Buffer.from(privateKey, 'hex');
@@ -140,10 +150,8 @@ module.exports = {
 
 
 		var cicAddress = "cx" + sha256(publicKey.toString("hex")).substr(24, 64)
-
+		var gucAddress = "gx" + sha256(publicKey.toString("hex")).substr(24, 64)
 		var re = {
-			"PK:":
-				privateKey.toString('hex'),
 			"publickey:":
 				publicKey.toString('hex'),
 			"EthereumAddress:":
@@ -153,7 +161,9 @@ module.exports = {
 			"BitcoinAddressUncompress:":
 				bitcoinAddUnCompress,
 			"CICAddress:":
-				cicAddress
+				cicAddress,
+            "guc:":
+                gucAddress,
 		}
 		res.send(re);
 	},
@@ -211,11 +221,17 @@ module.exports = {
 		res.send(result);
 	},
 	CICBroadcast: function CICBroadcast(req, res, next) {
-		console.log(req.body)
-		console.log(CICport)
-		var CICbroadparam = req.body 
-            request.post(
-				CICport,
+        var PortSelect = CICport
+        if (req.body.token == "guc"){
+            var PortSelect = GUCport
+        }
+		console.log("port :"+PortSelect)		
+		var CICbroadparam = req.body
+		var CICtestparam ='{"method":"'+req.body.method+'",'+'"param":'+JSON.stringify(req.body.param)+'}'
+		console.log("CICbroadparam :"+JSON.stringify({json:CICbroadparam})) 
+		console.log("CICtestparam :"+JSON.stringify({json:JSON.parse(CICtestparam)}))
+			request.post(
+				PortSelect,
                 /*{				
 					//json: { "method": "sendTransaction", "param": [params.result] }
                 },*/
