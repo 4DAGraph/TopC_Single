@@ -37,7 +37,7 @@ module.exports = {
 
 	newSignAll: function newSignAll(req, res, next) {
 		console.log(req.body.token)
-		console.log(123)
+		
 		if (req.body.token == "eth") {
 			var tx = sign.newSignAll(req, res, next);
 			sign.signNewETH(req, res, next, tx);

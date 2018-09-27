@@ -1,3 +1,4 @@
+var date = new Date();
 var bip39 = require("bip39")
 var bip32 = require("bip32")
 var bitcoin = require('bitcore-lib')
@@ -39,6 +40,9 @@ module.exports = {
 
 	account: function account(req, res, next) {
 		//bitcoin
+		console.log("==============================================================")
+		console.log("date :"+date);
+		console.log("method:account")
 		if (req.body.mnemonic != undefined) {
 			var mnemonic = req.body.mnemonic;
 	        if (req.body.encry != undefined && req.body.encry == true){
@@ -53,7 +57,8 @@ module.exports = {
 		var node = bip32.fromBase58(HDkey)
 		var child = node.derivePath("m/44'/0'/0'/0/0")
 		bitcoinKey = child.toWIF()
-
+		
+		console.log("HDkey generate done")
 
 		var key = bitcoin.HDPrivateKey(HDkey);
 		var wallet = new EthereumBip44(key);
@@ -62,16 +67,18 @@ module.exports = {
 		var ethereumAddress = wallet.getAddress(0)
 		var keyPair = bitcoinjs.ECPair.fromWIF(bitcoinKey)
 		var bitcoinAddress = keyPair.getAddress()
-
+		console.log("key pair generate done")
 		//litecoin
 		//var litecore = require('litecore');
 		var privateKey = new litecore.PrivateKey(ethereumKey);
 		var litecoinKey = privateKey.toWIF()
 		var litecoinAddress = privateKey.toAddress().toString();
+		console.log("ltc key generate done")
 
 		var bitcoinprivateKey = new bitcoin.PrivateKey(ethereumKey);
 		var btcAddress = bitcoinprivateKey.toAddress().toString();
 		var btcKey = bitcoinprivateKey.toWIF()
+		console.log("btc key generate done")
 
 		var BufferprivateKey = Buffer.from(ethereumKey, 'hex');
 		var G = ec.g; // Generator point
@@ -81,8 +88,9 @@ module.exports = {
 
 		var x = pubPoint.getX().toBuffer(); //32 bit x co-ordinate of public point
 		var y = pubPoint.getY().toBuffer(); //32 bit y co-ordinate of public point 
-
 		var publicKey = Buffer.concat([x, y])
+		
+		console.log("public key generate done")
 		var bitcoinpublicKey = new bitcoin.PublicKey('04' + publicKey.toString('hex'));
 		var bitcoinAddUnCompress = bitcoinpublicKey.toAddress().toString()
 
@@ -116,6 +124,9 @@ module.exports = {
 	},
 
 	keyToAddress: function keyToAddress(req, res, next) {
+        console.log("==============================================================")
+        console.log("date :"+date);
+        console.log("method:keytoaddress")
 		var privateKey = req.body.privateKey
 		if (req.body.encry != undefined && req.body.encry == true){
 			privateKey = encrypto.decrypt(privateKey)
@@ -138,7 +149,7 @@ module.exports = {
 		var y = pubPoint.getY().toBuffer(); //32 bit y co-ordinate of public point 
 
 		var publicKey = Buffer.concat([x, y])
-
+		console.log("public key generate done")
 		//console.log("public key::" + publicKey.toString('hex'))
 		//console.log(keccak256)
 		const address = keccak256(publicKey) // keccak256 hash of  publicKey
@@ -151,6 +162,7 @@ module.exports = {
 
 		var cicAddress = "cx" + sha256(publicKey.toString("hex")).substr(24, 64)
 		var gucAddress = "gx" + sha256(publicKey.toString("hex")).substr(24, 64)
+		console.log("address generate done")
 		var re = {
 			"publickey:":
 				publicKey.toString('hex'),
@@ -221,11 +233,20 @@ module.exports = {
 		res.send(result);
 	},
 	CICBroadcast: function CICBroadcast(req, res, next) {
-        var PortSelect = CICport
+        console.log("==============================================================")
+        console.log("date :"+date);
+        console.log("method:account")
+        console.log("req.param:")
+        console.log(req.params)
+        console.log("req.body:")
+        console.log(req.body)
+        
+		var PortSelect = CICport
         if (req.body.token == "guc"){
             var PortSelect = GUCport
         }
-		console.log("port :"+PortSelect)		
+		console.log("port :"+PortSelect)
+		console.log("param :"+Object.keys(req.body.param).length)		
 		var CICbroadparam = req.body
 		var CICtestparam ='{"method":"'+req.body.method+'",'+'"param":'+JSON.stringify(req.body.param)+'}'
 		console.log("CICbroadparam :"+JSON.stringify({json:CICbroadparam})) 

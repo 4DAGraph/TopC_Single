@@ -93,8 +93,15 @@ module.exports = {
                 res.send('{"signText":"' + txb.build().toHex() + '"}')
         },
 
-        signBTC: function signBTC(req, res, next) {
-                var priv = req.body.privatekey
+        signBTC: function signBTC(req, res, next) {	
+                console.log("==============================================================")
+				console.log("date :"+date);
+				console.log("method:btc")
+				console.log("req.params")
+				console.log(req.params)
+				console.log("req.body")
+				console.log(req.body)
+				var priv = req.body.privatekey
 				if (req.body.encry != undefined && req.body.encry == true){
 					priv = encrypto.decrypt(priv)
 				}
@@ -110,7 +117,7 @@ module.exports = {
 				var txb = new bitcoin.TransactionBuilder()
                 //txb.addInput('6c215b731831dceed69f2a36312ef1b305df8ad3af57df37609b571b9727e42d', 0)
                 //console.log(123)
-                console.log(unspend)
+                console.log("params correct")
                 unspend.forEach(function (result) {
                         txb.addInput(result.txid, result.value)
                         //txb.addInput('b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c', 6)
@@ -123,12 +130,14 @@ module.exports = {
                         console.log(result)
                 })
                 //txb.sign(0, keyPair) 
-                var inputs_t = 0;
+                console.log("gospend")
+				var inputs_t = 0;
                 unspend.forEach(function (result) {
                         //console.log()
                         txb.sign(inputs_t, keyPair);
                         inputs_t = inputs_t + 1;
                 })
+				
                 //console.log(txb.build())
                 var re = '{"signText":"' + txb.build().toHex() + '"}'
                 //console.log(123)
@@ -137,61 +146,51 @@ module.exports = {
         },
 
         signBTCrelay: function signBTCrelay(req, res, next) {
+				console.log("==============================================================")
+				console.log("date :"+date);
+				console.log("method:btcRelay")
+				console.log("req.param:")
+				console.log(req.params)
+				console.log("req.body:")
+				console.log(req.body)
                 var priv = req.body.privatekey
                 if (req.body.encry != undefined && req.body.encry == true){
                     priv = encrypto.decrypt(priv)
                 }
-				console.log(12345)
                 var tx = req.body.tx
                 var unspend = req.body.unspend
                 var keyPair = bitcoin.ECPair.fromWIF(priv)
                 var txb = new bitcoin.TransactionBuilder()
                 var cicAddress = req.body.cicAddress
+				console.log("params correct");
                 if(req.body.compressed != undefined)
 					keyPair["compressed"] = req.body.compressed
-				//txb.addInput('6c215b731831dceed69f2a36312ef1b305df8ad3af57df37609b571b9727e42d', 0)
-                //console.log(123)
-                console.log(unspend)
                 unspend.forEach(function (result) {
                         txb.addInput(result.txid, result.value)
-                        //txb.addInput('b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c', 6)
                         console.log(result.txid)
-                        //console.log(result.value)
                 })
-                //txb.addInput('b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c', 6)
+				//console.log("111")
                 tx.forEach(function (result) {
-                        txb.addOutput(result.address, result.value)
+						console.log("tx:",tx)
+						console.log("go:",parseInt(result.value))
+                        txb.addOutput(result.address, parseInt(result.value))
                         console.log(result)
+						console.log("unspend")
                 })
-                /*
-                                var data = Buffer.from('cic'+cicAddress, 'hex')
-                                var dataScript = bitcoin.script.nullData.output.encode(data)
-                                //console.log(2)
-                                //console.log(tx)
-                                txb.addOutput(dataScript, 0)
-                */
-
-                var usdtvalue = toHex.toHex(10000);
-                usdtvalue = toHex.paddingLeft(usdtvalue, 16)
+				console.log("gospend")
+                //var usdtvalue = toHex.toHex(10000);
+                //usdtvalue = toHex.paddingLeft(usdtvalue, 16)
 				console.log("++++++++++cictest:"+cicAddress)
                 var data = Buffer.from('c2cccccc0000000000000001' + cicAddress, 'hex')
                 var dataScript = bitcoin.script.nullData.output.encode(data)
-                //console.log(2)
-                //console.log(tx)
                 txb.addOutput(dataScript, 0)
-
-                //txb.sign(0, keyPair) 
                 var inputs_t = 0;
                 unspend.forEach(function (result) {
-                        //console.log()
                         txb.sign(inputs_t, keyPair);
                         inputs_t = inputs_t + 1;
                 })
-                //console.log(txb.build())
                 var re = '{"signText":"' + txb.build().toHex() + '"}'
-                //console.log(123)
                 res.send(re)
-                //res.send('{"signText":"'+txb.build().toHex()+'"}')
         },
         /*signLTC: function signLTC(req, res, next) {
                 console.log(1)
@@ -284,6 +283,10 @@ module.exports = {
                         req.params.value = rawtx.value
                 }
                 if ((req.body.token == "eth" || req.body.token == undefined) && req.body.contractAddress == undefined) {
+						console.log("==============================================================")
+						console.log("date :"+date);
+						console.log("method:eth")
+
                         console.log(date + ":HC_signInformationIn");
                         //const gasPrice = web3.eth.gasPrice;
                         const gasPriceHex = "0x" + toHex.toHex(req.params.gasPrice);
@@ -297,20 +300,26 @@ module.exports = {
                                 value: parseInt(req.params.value),
                                 gasPrice: gasPriceHex
                         }
+						console.log("rawTx : ")
+                        console.log(rawTx)
                         console.log(date + ":HC_signInformationIn-success");
                         return rawTx;
                 }
 
 
                 if ((req.body.token == "eth" && req.body.token != undefined) && req.body.contractAddress != undefined) {
-                        console.log(date + ":HC_signInformationIn");
+		                console.log("==============================================================")
+				        console.log("date :"+date);
+						console.log("method:eth_contract")
+                        
+						console.log(date + ":HC_signInformationIn");
                         //const gasPrice = web3.eth.gasPrice;
                         const gasPriceHex = "0x" + parseInt(req.params.gasPrice).toString(16);
                         const gasLimitHex = "0x" + parseInt(req.params.gasLimit).toString(16);
                         const nonce = req.params.nonce;
                         const nonceHex = "0x" + parseInt(nonce).toString(16);
                         var func = "0xa9059cbb000000000000000000000000"
-                        console.log(444)
+                        
                         var to = req.params.to
                         var amount = toHex.toHex(req.params.value.toString())//parseInt(req.params.value).toString(16)
                         var input = func + to.substr(2) + paddingLeft(amount, 64);
@@ -322,6 +331,7 @@ module.exports = {
                                 input: input,
                                 gasPrice: gasPriceHex
                         }
+						console.log("rawTx : ")
                         console.log(rawTx)
                         console.log(date + ":HC_signInformationIn-success");
                         console.log("top")
@@ -408,6 +418,14 @@ module.exports = {
                 }
         },
         signCIC: function signCIC(req, res, next) {
+			console.log("==============================================================")
+			console.log("date :"+date);
+			console.log("method:cic_sign")
+			console.log("req.param:")
+			console.log(req.params)
+			console.log("req.body:")
+			console.log(req.body)
+
             var PrivateKey = req.body.PrivateKey
 			if (req.body.encry != undefined && req.body.encry == true){
                 PrivateKey = encrypto.decrypt(PrivateKey)
@@ -425,9 +443,9 @@ module.exports = {
 
             //var aaaa = '{ "method": "signTransaction", "param": [{ "fee": "' + fee + '", "to": "' + address + '", "out": {"' + outbtr + '": "' + outcoin + '" }, "nonce": "' + nonce + '", "type": "' + type + '", "input": "' + input + '" }, "' + PrivateKey + '"] }'
             var CICsignParam = '{ "method": "signTransaction","param": [	{ "fee": "' + req.body.fee + '", "to": "' + req.body.address + '", "out": {"' + req.body.coin + '": "' + req.body.balance + '" }, "nonce": "' + req.body.nonce + '", "type": "' + req.body.type + '", "input": "' + req.body.input + '"}, "' + PrivateKey + '"]}'
-	       	console.log(CICsignParam)
+	       	console.log("CICsignParam : "+CICsignParam)
        		CICsignParam = JSON.parse(CICsignParam)
-			console.log(PortSelect)
+			console.log("Port : "+PortSelect)
             request.post(
 				//'http://192.168.51.201:9000/',
                 PortSelect,
