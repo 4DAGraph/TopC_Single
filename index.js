@@ -9,6 +9,15 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+var requestUrl = function (req, res, next) {
+  var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+  console.log(fullUrl)
+  next();
+};
+
+app.use(requestUrl);
+
 routes(app);
 
 /*

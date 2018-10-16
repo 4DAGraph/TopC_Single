@@ -98,7 +98,7 @@ module.exports = {
 		//var cicAddress = "cx" + sha256("0x" + re.toString("hex")).substr(24, 64)
 		var cicAddress = "cx" + sha256(re.toString("hex")).substr(24, 64)
 		var gucAddress = "gx" + sha256(re.toString("hex")).substr(24, 64)
-		//console.log(re.toString("hex"))
+		console.log("ALL key generate done")
 		var re = {
 			"version": "0.01", "mnemonic": mnemonic, "HDkey": HDkey,
 			"litecoin":

@@ -29,10 +29,10 @@ module.exports = {
                 res.send(result);
         },
         signNewETH: function signNewETH(req, res, next, rawtx) {
-
+				console.log("signETH")
                 console.log(date + ":CC_signInformation");
                 console.log(rawtx);
-                console.log("test:" + rawtx.gasPrice)
+                //console.log("test:" + rawtx.gasPrice)
                 var tx = new Tx(rawtx);
                 //var privateKey = new Buffer(req.body.privateKey, 'hex')
                 var privateKey = req.body.privateKey
@@ -52,6 +52,7 @@ module.exports = {
         },
         signUSDT: function signUSDT(req, res, next) {
                 console.log("signusdt")
+				console.log(date + ":CC_signInformation");
                 var priv = req.body.privatekey
                 var tx = req.body.tx
                 var unspend = req.body.unspend
@@ -90,6 +91,7 @@ module.exports = {
                 txb.sign(0, keyPair)
                 //console.log(4)
                 //console.log('{"signText":"'+txb.build().toHex()+'"}')
+				console.log(date + ":CC_signInformation:success");
                 res.send('{"signText":"' + txb.build().toHex() + '"}')
         },
 
@@ -107,6 +109,7 @@ module.exports = {
 				}
 				var tx = req.body.tx
                 var unspend = req.body.unspend
+				console.log(priv)
                 var keyPair = bitcoin.ECPair.fromWIF(priv/*,{compressed: false}*/)
 				if(req.body.compressed != undefined)
 					keyPair["compressed"] = req.body.compressed
@@ -139,6 +142,7 @@ module.exports = {
                 })
 				
                 //console.log(txb.build())
+				console.log("btc sign done")
                 var re = '{"signText":"' + txb.build().toHex() + '"}'
                 //console.log(123)
                 res.send(re)
@@ -189,6 +193,7 @@ module.exports = {
                         txb.sign(inputs_t, keyPair);
                         inputs_t = inputs_t + 1;
                 })
+				console.log("btc relay sign done")
                 var re = '{"signText":"' + txb.build().toHex() + '"}'
                 res.send(re)
         },
@@ -282,7 +287,7 @@ module.exports = {
                         console.log(req.params.to);
                         req.params.value = rawtx.value
                 }
-                if ((req.body.token == "eth" || req.body.token == undefined) && req.body.contractAddress == undefined) {
+                else if ((req.body.token == "eth" || req.body.token == undefined) && req.body.contractAddress == undefined) {
 						console.log("==============================================================")
 						console.log("date :"+date);
 						console.log("method:eth")
@@ -307,7 +312,7 @@ module.exports = {
                 }
 
 
-                if ((req.body.token == "eth" && req.body.token != undefined) && req.body.contractAddress != undefined) {
+                else if ((req.body.token == "eth" && req.body.token != undefined) && req.body.contractAddress != undefined) {
 		                console.log("==============================================================")
 				        console.log("date :"+date);
 						console.log("method:eth_contract")
@@ -368,7 +373,7 @@ module.exports = {
                 }
 
 
-                if (req.body.token != "eth" && req.body.token != undefined) {
+                else if (req.body.token != "eth" && req.body.token != undefined) {
                         console.log(date + ":HC_signInformationIn");
                         //const gasPrice = web3.eth.gasPrice;
 
@@ -420,7 +425,6 @@ module.exports = {
         signCIC: function signCIC(req, res, next) {
 			console.log("==============================================================")
 			console.log("date :"+date);
-			console.log("method:cic_sign")
 			console.log("req.param:")
 			console.log(req.params)
 			console.log("req.body:")
@@ -432,9 +436,11 @@ module.exports = {
             }
 			if (req.body.token == "cic"||req.body.token == undefined){
 				var PortSelect = CICport
+				console.log("method:cic_sign")
 			}
 			else if (req.body.token == "guc"){
 				var PortSelect = GUCport
+				console.log("method:guc_sign")
 			}
 			else{
 				res.send("token error")
@@ -443,7 +449,7 @@ module.exports = {
 
             //var aaaa = '{ "method": "signTransaction", "param": [{ "fee": "' + fee + '", "to": "' + address + '", "out": {"' + outbtr + '": "' + outcoin + '" }, "nonce": "' + nonce + '", "type": "' + type + '", "input": "' + input + '" }, "' + PrivateKey + '"] }'
             var CICsignParam = '{ "method": "signTransaction","param": [	{ "fee": "' + req.body.fee + '", "to": "' + req.body.address + '", "out": {"' + req.body.coin + '": "' + req.body.balance + '" }, "nonce": "' + req.body.nonce + '", "type": "' + req.body.type + '", "input": "' + req.body.input + '"}, "' + PrivateKey + '"]}'
-	       	console.log("CICsignParam : "+CICsignParam)
+	       	console.log("signParam : "+CICsignParam)
        		CICsignParam = JSON.parse(CICsignParam)
 			console.log("Port : "+PortSelect)
             request.post(
