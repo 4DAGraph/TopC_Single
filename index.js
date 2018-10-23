@@ -51,7 +51,7 @@ if (cluster.isMaster) {
 
 app.use(function (err, req, res, next) {
 	//console.error(err.stack)
-	res.status(500).send({"error":"error parameter","status":"1","message":err.stack})
+	res.status(500).send("error")// parameter","status":"1","message":err.stack})
 })
 
 //app.set('port', config.port);
