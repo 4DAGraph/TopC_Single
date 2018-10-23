@@ -278,7 +278,7 @@ module.exports = {
 				console.log("body:"+JSON.stringify(req.body))
                 var rawtx = JSON.parse(req.params.rawtx);
                 console.log("rawtx: "+rawtx)
-				console.log("test10" + rawtx.gasPrice)
+				console.log("gasPrice" + rawtx.gasPrice)
                 if (req.body.to == undefined) {
                         req.params.gasPrice = rawtx.gasPrice
                         req.params.gasLimit = rawtx.gasLimit
@@ -286,6 +286,7 @@ module.exports = {
                         req.params.to = rawtx.to
                         console.log(req.params.to);
                         req.params.value = rawtx.value
+						req.params.input = rawtx.input
                 }
                 if ((req.body.token == "eth" || req.body.token == undefined) && req.body.contractAddress == undefined) {
 						console.log("==============================================================")
@@ -298,13 +299,16 @@ module.exports = {
                         const gasLimitHex = "0x" + parseInt(req.params.gasLimit).toString(16);
                         const nonce = req.params.nonce;
                         const nonceHex = "0x" + parseInt(nonce).toString(16);
+						var input = "0x" + req.params.input
                         var rawTx = {
                                 nonce: nonceHex,
                                 gasLimit: gasLimitHex,
                                 to: req.params.to,
                                 value: parseInt(req.params.value),
-                                gasPrice: gasPriceHex
+                                gasPrice: gasPriceHex,
+								input:""
                         }
+						if(req.params.input!=undefined){rawTx.input = input}
 						console.log("rawTx : ")
                         console.log(rawTx)
                         console.log(date + ":HC_signInformationIn-success");
