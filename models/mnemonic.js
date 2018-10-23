@@ -20,7 +20,7 @@ var CICport = config.cicport;
 var GUCport = config.gucport;
 var crypto = require('crypto');
 var encrypto = require('../../homework/firstclass');
-
+var randomBytes = require('randombytes')
 /*
 var fs=require("fs");
 
@@ -48,8 +48,20 @@ module.exports = {
 	        if (req.body.encry != undefined && req.body.encry == true){
 		        mnemonic = encrypto.decrypt(mnemonic)
 			}
+			console.log("mnemonic:"+mnemonic)
+			if (bip39.validateMnemonic(mnemonic) != true){
+				console.log("mnemonic error")		
+				res.send('{"status":"1","message":"error word"}')
+				return
+			}
 		} else {
-			var mnemonic = bip39.generateMnemonic()
+			var mnemonic = bip39.generateMnemonic()//128, randomBytes, bip39.wordlists.chinese_simplified)
+			/*var ran = randomBytes(128 / 8)
+			var cs = bip39.entropyToMnemonic(ran, bip39.wordlists.chinese_simplified)
+			var ct = bip39.entropyToMnemonic(ran, bip39.wordlists.chinese_traditional)
+			var j = bip39.entropyToMnemonic(ran, bip39.wordlists.japanese)
+			var k = bip39.entropyToMnemonic(ran, bip39.wordlists.korean)
+			var mnemonic = bip39.entropyToMnemonic(ran, bip39.wordlists.english)*/
 		}
 		var seed = bip39.mnemonicToSeedHex(mnemonic)
 		var hdkey = HDKey.fromMasterSeed(new Buffer(seed, 'hex'))
@@ -100,7 +112,9 @@ module.exports = {
 		var gucAddress = "gx" + sha256(re.toString("hex")).substr(24, 64)
 		console.log("ALL key generate done")
 		var re = {
-			"version": "0.01", "mnemonic": mnemonic, "HDkey": HDkey,
+			"version": "0.01", 
+			"mnemonic": mnemonic,//"mnemoniczh-tw": ct,"mnemoniczh-cn": cs,"mnemonicjp": j,"mnemonickr": k, 
+			"HDkey": HDkey,
 			"litecoin":
 				{ "privateKey": litecoinKey, "address": litecoinAddress },
 			"bitcoin":
