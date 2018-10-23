@@ -287,7 +287,7 @@ module.exports = {
                         console.log(req.params.to);
                         req.params.value = rawtx.value
                 }
-                else if ((req.body.token == "eth" || req.body.token == undefined) && req.body.contractAddress == undefined) {
+                if ((req.body.token == "eth" || req.body.token == undefined) && req.body.contractAddress == undefined) {
 						console.log("==============================================================")
 						console.log("date :"+date);
 						console.log("method:eth")
@@ -312,7 +312,7 @@ module.exports = {
                 }
 
 
-                else if ((req.body.token == "eth" && req.body.token != undefined) && req.body.contractAddress != undefined) {
+                if ((req.body.token == "eth" && req.body.token != undefined) && req.body.contractAddress != undefined) {
 		                console.log("==============================================================")
 				        console.log("date :"+date);
 						console.log("method:eth_contract")
@@ -373,7 +373,7 @@ module.exports = {
                 }
 
 
-                else if (req.body.token != "eth" && req.body.token != undefined) {
+                if (req.body.token != "eth" && req.body.token != undefined) {
                         console.log(date + ":HC_signInformationIn");
                         //const gasPrice = web3.eth.gasPrice;
 
